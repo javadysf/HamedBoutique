@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'B-NAZANIN';
+  src: url('/assets/fonts/B-NAZANIN.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+html {
+  direction: rtl;
+  font-family: 'B-NAZANIN';
+  color: #000000; /* مشکی */
+  background: #FFFFFF; /* سفید */
+}
+body, * {
+  font-family: 'B-NAZANIN' !important;
+  color: #000000 ;
+}
