@@ -4,6 +4,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  name?: string;
   phone?: string;
   address?: string;
   city?: string;
@@ -11,7 +12,7 @@ export interface User {
   profileImage?: string;
   birthDate?: string;
   gender?: string;
-  isAdmin?: number; // اضافه شد
+  isAdmin?: number;
 }
 
 interface UserState {

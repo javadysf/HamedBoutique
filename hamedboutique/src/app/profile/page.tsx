@@ -7,7 +7,8 @@ import { Loading } from "@/components/common";
 
 interface UserProfile {
   id: number;
-  name: string;
+  username: string;
+  name?: string;
   email: string;
   phone?: string;
   address?: string;
@@ -16,6 +17,7 @@ interface UserProfile {
   profileImage?: string;
   birthDate?: string;
   gender?: string;
+  isAdmin?: number;
 }
 
 const ProfilePage = () => {
