@@ -9,14 +9,15 @@ import Image from "next/image";
 
 const slides = [
   {
-    image: "/assets/pics/pichero1.png",
+    image: 
+    "/assets/pics/hamed.jpg",
     title: "خرید خود را همین حالا شروع کنید!",
     subtitle: "تنوع بی‌نظیر، قیمت مناسب و ارسال سریع در انتظار شماست.",
     cta: "مشاهده محصولات",
     link: "/products",
   },
   {
-    image: "/assets/pics/hero2.jpg",
+    image: "/assets/pics/pichero1.png",
     title: "حامد بوتیک، انتخاب شیک‌پوشان",
     subtitle: "جدیدترین کالکشن‌های پوشاک مردانه ارسال رایگان و تضمین کیفیت.",
     cta: "درباره ما بیشتر بدانید",
@@ -45,23 +46,23 @@ const HeroSection = () => {
       >
         {slides.map((slide, idx) => (
      <SwiperSlide key={idx}>
-     <div className="w-full h-full flex flex-col md:flex-row-reverse items-center justify-center px-6 md:px-24 gap-8" style={{height: '100%'}}>
-       <div className="flex-shrink-0 flex justify-center items-center w-full md:w-auto">
+     <div className="w-full h-full flex flex-col md:flex-row-reverse items-center justify-center px-4 sm:px-6 md:px-12 lg:px-24 gap-4 md:gap-8" style={{height: '100%'}}>
+       <div className="flex-shrink-0 flex justify-center items-center w-full md:w-auto mt-4 md:mt-0">
          <Image
            src={slide.image}
            alt={slide.title}
-           width={400}
+           width={660}
            height={660}
-          //  className="w-72 md:w-72 drop-shadow-xl animate-fade-in"
-          //  style={{ maxHeight: 220 }}
+           className="w-64 sm:w-56 md:w-64 lg:w-72 drop-shadow-xl object-contain"
+           priority
          />
        </div>
-       <div className="text-center md:text-right flex-1 flex flex-col justify-center items-center md:items-start">
-         <h1 className="text-3xl md:text-5xl font-extrabold mb-4 drop-shadow-lg text-gray-700">{slide.title}</h1>
-         <p className="text-lg md:text-2xl mb-6 font-bold text-gray-400">{slide.subtitle}</p>
+       <div className="text-center md:text-right flex-1 flex flex-col justify-center items-center md:items-start py-4 md:py-0">
+         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-2 sm:mb-4 drop-shadow-lg text-gray-700">{slide.title}</h1>
+         <p className="text-sm sm:text-base md:text-lg lg:text-2xl mb-4 sm:mb-6 font-bold text-gray-400 max-w-md">{slide.subtitle}</p>
          <a
            href={slide.link}
-           className="inline-block bg-white text-gray-700 font-bold py-3 px-8 rounded-lg shadow hover:bg-gray-700 hover:text-white transition-colors text-lg border-2 border-gray-100 hover:border-gray-700"
+           className="inline-block bg-white text-gray-700 font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-lg shadow hover:bg-gray-700 hover:text-white transition-colors text-sm sm:text-base md:text-lg border-2 border-gray-100 hover:border-gray-700"
          >
            {slide.cta}
          </a>

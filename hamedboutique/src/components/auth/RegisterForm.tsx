@@ -69,14 +69,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
-      <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">ثبت‌نام</h2>
+    <div className="w-full">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">ثبت‌نام</h2>
+        <p className="text-gray-600 mb-4 ">حساب کاربری جدید ایجاد کنید</p>
+      </div>
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium text-secondary mb-2">
-            نام کاربری
-          </label>
+        <div className="flex items-center justify-between gap-4">
           <input
             type="text"
             id="username"
@@ -84,15 +84,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
             value={formData.username}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             placeholder="نام کاربری خود را وارد کنید"
           />
         </div>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-secondary mb-2">
-            ایمیل
-          </label>
+        <div className="flex items-center justify-between gap-4">
           <input
             type="email"
             id="email"
@@ -100,15 +97,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             placeholder="example@email.com"
           />
         </div>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-secondary mb-2">
-            رمز عبور
-          </label>
+        <div className="flex items-center justify-between gap-4">
           <input
             type="password"
             id="password"
@@ -116,15 +110,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             placeholder="حداقل ۶ کاراکتر"
           />
         </div>
 
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-secondary mb-2">
-            تکرار رمز عبور
-          </label>
+        <div className="flex items-center justify-between gap-4">
           <input
             type="password"
             id="confirmPassword"
@@ -132,7 +123,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             placeholder="رمز عبور را تکرار کنید"
           />
         </div>
@@ -146,18 +137,25 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg shadow-lg"
         >
-          {loading ? "در حال ثبت‌نام..." : "ثبت‌نام"}
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
+              در حال ثبت‌نام...
+            </div>
+          ) : (
+            "ثبت‌نام"
+          )}
         </button>
       </form>
 
-      <div className="mt-6 text-center">
-        <p className="text-secondary text-sm">
+      <div className="mt-8 text-center">
+        <p className="text-gray-600 text-sm">
           قبلاً ثبت‌نام کرده‌اید؟{" "}
           <button
             onClick={onSwitchToLogin}
-            className="text-primary hover:underline font-medium"
+            className="text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
           >
             وارد شوید
           </button>

@@ -9,12 +9,12 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { title, price, image, description, category, discount } = body;
+  const { title, price, image, images, description, category, discount, colors, sizes } = body;
   if (!title || !price) {
     return NextResponse.json({ error: 'عنوان و قیمت الزامی است' }, { status: 400 });
   }
   await initDb();
-  const result = await addProduct({ title, price, image, description, category, discount });
+  const result = await addProduct({ title, price, image, images, description, category, discount, colors, sizes });
   return NextResponse.json({ message: 'محصول با موفقیت افزوده شد', id: result.lastID });
 }
 

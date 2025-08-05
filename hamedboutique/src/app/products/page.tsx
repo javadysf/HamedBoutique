@@ -73,16 +73,16 @@ const ProductsPage = () => {
   }, [products, selectedCategory, sort]);
 
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-8 text-primary">محصولات بوتیک</h1>
-      <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
-        <div className="flex gap-2 items-center">
-          <label htmlFor="category" className="font-bold text-secondary">دسته‌بندی:</label>
+    <main className="p-4 sm:p-6 md:p-8">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 md:mb-8 text-gray-700">محصولات بوتیک</h1>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 items-start sm:items-center justify-between">
+        <div className="flex gap-2 items-center w-full sm:w-auto">
+          <label htmlFor="category" className="font-bold text-gray-600 text-sm sm:text-base">دسته‌بندی:</label>
           <select
             id="category"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm flex-grow sm:flex-grow-0"
           >
             <option value="all">همه</option>
             {categories.map((cat) => (
@@ -90,13 +90,13 @@ const ProductsPage = () => {
             ))}
           </select>
         </div>
-        <div className="flex gap-2 items-center">
-          <label htmlFor="sort" className="font-bold text-secondary">مرتب‌سازی:</label>
+        <div className="flex gap-2 items-center w-full sm:w-auto">
+          <label htmlFor="sort" className="font-bold text-gray-600 text-sm sm:text-base">مرتب‌سازی:</label>
           <select
             id="sort"
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm flex-grow sm:flex-grow-0"
           >
             {sortOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -109,7 +109,7 @@ const ProductsPage = () => {
       ) : filtered.length === 0 ? (
         <div className="text-center py-8 text-red-600">محصولی یافت نشد.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {filtered.map((product) => (
             <ProductCard
               key={product.id}

@@ -28,12 +28,12 @@ const BestSellers = () => {
   }, []);
 
   return (
-    <section className="w-full max-w-6xl mb-12 px-4">
-      <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">پرفروش‌ترین محصولات</h2>
+    <section className="w-full max-w-6xl mb-8 sm:mb-12 px-4 mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-700 mb-4 sm:mb-6 text-center">پرفروش‌ترین محصولات</h2>
       {loading ? (
         <Loading size="medium" text="در حال بارگذاری محصولات پرفروش..." />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {products.map((product) => (
             <ProductCard
               key={product.id}

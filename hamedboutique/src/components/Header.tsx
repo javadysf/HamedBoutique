@@ -8,6 +8,7 @@ import basket from "../../public/assets/pics/Basket.png"
 import Image from "next/image";
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+import Logo from "../../public/assets/pics/logo.png"
 
 const navLinks = [
   { href: "/", label: "خانه" },
@@ -64,13 +65,14 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full bg-white shadow-md mb-8 transition-colors duration-500 sticky top-0 z-50">
-      <nav className="container mx-auto flex items-center justify-between py-3 px-4">
+    <header className="w-full bg-white shadow-md transition-colors duration-500 sticky top-0 z-50">
+      <nav className="container mx-auto flex items-center justify-between py-2 px-4">
         <div className="flex items-center gap-8 md:gap-16">
           <div className="text-2xl font-extrabold text-gray-800 drop-shadow-sm tracking-tight select-none">
+             <Image src={Logo} alt="logo" width={64} height={64} className="inline-block ml-2" />
              حامد بوتیک
           </div>
-          <ul className="hidden md:flex gap-1 sm:gap-4 font-medium text-base">
+          <ul className="hidden md:flex gap-1 sm:gap-4 font-normal text-xl">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
@@ -118,12 +120,14 @@ const Header = () => {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">
-                      {user.name ? user.name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()}
+                      {user.name ? user.name.charAt(0).toUpperCase() : 
+                       user.username ? user.username.charAt(0).toUpperCase() : 
+                       user.email ? user.email.charAt(0).toUpperCase() : "U"}
                     </div>
                   )}
                 </div>
                 <span className="text-gray-800 text-sm font-medium hidden sm:block">
-                  {user.name || user.username}
+                  {user.name || user.username || user.email || "کاربر"}
                 </span>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -209,13 +213,13 @@ const Header = () => {
             <div className="flex items-center gap-2">
               <Link
                 href="/auth"
-                className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium shadow-sm"
+                className="bg-gradient-to-l border border-gray-500 from-gray-400 via-gray-100 to-white text-black  hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium shadow-sm"
               >
                 ورود
               </Link>
               <Link
                 href="/auth?mode=register"
-                className="hidden sm:block bg-transparent border border-blue-600 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium"
+                className="hidden sm:block bg-transparent border border-gray-500 text-black bg-gray-100 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium"
               >
                 ثبت‌نام
               </Link>

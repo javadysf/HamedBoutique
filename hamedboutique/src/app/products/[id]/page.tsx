@@ -10,9 +10,13 @@ interface Product {
   title: string;
   price: number;
   image: string;
+  images?: string[] | string;
   description: string;
   category: string;
-  rating: { rate: number; count: number };
+  discount?: number;
+  rating?: { rate: number; count: number };
+  colors?: string[] | string;
+  sizes?: string[] | string;
 }
 
 interface Comment {
@@ -22,12 +26,6 @@ interface Comment {
   rate: number;
 }
 
-const initialMockComments: Comment[] = [
-  { id: 1, user: "کاربر ۱", text: "محصول خیلی باکیفیت بود، ممنون!", rate: 5 },
-  { id: 2, user: "کاربر ۲", text: "ارسال سریع و بسته‌بندی عالی.", rate: 4 },
-  { id: 3, user: "کاربر ۳", text: "قیمت مناسب نسبت به بازار.", rate: 4 },
-];
-
 const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
   return (
     <div className="flex flex-row-reverse justify-end gap-1 cursor-pointer select-none">
@@ -35,14 +33,10 @@ const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) 
         <span
           key={star}
           onClick={() => onChange(star)}
-          onKeyDown={(e) => { if (e.key === 'Enter') onChange(star); }}
-          tabIndex={0}
-          role="button"
-          aria-label={`امتیاز ${star}`}
           className={
             star <= value
-              ? "text-yellow-400 text-2xl transition-colors"
-              : "text-gray-300 text-2xl transition-colors"
+              ? "text-yellow-400 text-2xl transition-colors hover:text-yellow-500"
+              : "text-gray-300 text-2xl transition-colors hover:text-yellow-400"
           }
         >
           ★
@@ -58,14 +52,15 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [related, setRelated] = useState<Product[]>([]);
-  const [comments, setComments] = useState<Comment[]>([]); // حذف initialMockComments
+  const [comments, setComments] = useState<Comment[]>([]);
   const [form, setForm] = useState({ user: "", text: "", rate: 5 });
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const [addedToCart, setAddedToCart] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
   const dispatch = useAppDispatch();
 
-  // دریافت نظرات از API
   useEffect(() => {
     if (!id) return;
     fetch(`/api/comments?productId=${id}`)
@@ -76,19 +71,47 @@ const ProductDetailPage = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`https://fakestoreapi.com/products/${id}`)
+    
+    fetch(`/api/products/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("محصول پیدا نشد");
         return res.json();
       })
       .then((data: Product) => {
+        // پردازش تصاویر، رنگ‌ها و سایزها
+        if (data.images && typeof data.images === 'string') {
+          try {
+            data.images = JSON.parse(data.images);
+          } catch {
+            data.images = [];
+          }
+        }
+        if (data.colors && typeof data.colors === 'string') {
+          try {
+            data.colors = JSON.parse(data.colors);
+          } catch {
+            data.colors = [];
+          }
+        }
+        if (data.sizes && typeof data.sizes === 'string') {
+          try {
+            data.sizes = JSON.parse(data.sizes);
+          } catch {
+            data.sizes = [];
+          }
+        }
+        
         setProduct(data);
         setError("");
-        fetch(`https://fakestoreapi.com/products/category/${encodeURIComponent(data.category)}`)
-          .then((res) => res.json())
-          .then((relatedData: Product[]) => {
-            setRelated(relatedData.filter((p) => p.id !== data.id).slice(0, 4));
-          });
+        
+        if (data.category) {
+          fetch(`/api/products?category=${encodeURIComponent(data.category)}`)
+            .then((res) => res.json())
+            .then((relatedData: Product[]) => {
+              setRelated(relatedData.filter((p) => p.id !== data.id).slice(0, 4));
+            })
+            .catch(() => setRelated([]));
+        }
       })
       .catch(() => setError("محصول مورد نظر پیدا نشد!"))
       .finally(() => setLoading(false));
@@ -100,18 +123,6 @@ const ProductDetailPage = () => {
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
     }
-  };
-
-  const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setFormError("");
-    setFormSuccess("");
-  };
-
-  const handleStarChange = (rate: number) => {
-    setForm({ ...form, rate });
-    setFormError("");
-    setFormSuccess("");
   };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
@@ -135,7 +146,6 @@ const ProductDetailPage = () => {
       setForm({ user: "", text: "", rate: 5 });
       setFormSuccess("نظر شما با موفقیت ثبت شد!");
       setFormError("");
-      // دریافت مجدد نظرات
       const commentsRes = await fetch(`/api/comments?productId=${id}`);
       setComments(await commentsRes.json());
     } catch {
@@ -144,101 +154,292 @@ const ProductDetailPage = () => {
     }
   };
 
-  if (loading) return <main className="p-8 text-center">در حال بارگذاری...</main>;
-  if (error) return <main className="p-8 text-center text-red-600">{error}</main>;
+  if (loading) return (
+    <main className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-600">در حال بارگذاری...</p>
+      </div>
+    </main>
+  );
+  
+  if (error) return (
+    <main className="min-h-screen flex items-center justify-center">
+      <div className="text-center text-red-600">
+        <p className="text-xl mb-4">{error}</p>
+        <button onClick={() => window.history.back()} className="text-blue-600 hover:underline">
+          بازگشت
+        </button>
+      </div>
+    </main>
+  );
+  
   if (!product) return null;
 
   return (
-    <main className="p-8 max-w-4xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-8 items-center bg-white rounded-2xl shadow-lg p-6">
-        <img
-          src={product.image}
-          alt={product.title}
-          className="w-60 h-60 object-contain rounded-xl bg-gray-50 border"
-        />
-        <div className="flex-1 text-right">
-          <h1 className="text-2xl font-bold mb-4 text-primary">{product.title}</h1>
-          <p className="text-primary font-bold text-xl mb-2">{product.price.toLocaleString()} تومان</p>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-yellow-400 text-lg">★</span>
-            <span>{product.rating.rate} / 5</span>
-            <span className="text-gray-500 text-sm">({product.rating.count} رای)</span>
-          </div>
-          <p className="mb-6 text-gray-700 leading-7">{product.description}</p>
-          <button 
-            onClick={handleAddToCart}
-            className={`font-bold py-3 px-8 rounded-lg shadow transition-colors text-lg ${
-              addedToCart 
-                ? 'bg-green-600 text-white' 
-                : 'bg-primary hover:bg-navy-700 text-white'
-            }`}
-          >
-            {addedToCart ? '✓ افزوده شد' : 'افزودن به سبد خرید'}
-          </button>
-        </div>
-      </div>
-
-      {/* بخش نظرات */}
-      <section className="mt-12 bg-white rounded-2xl shadow p-6">
-        <h2 className="text-xl font-bold mb-4 text-primary">نظرات کاربران</h2>
-        <div className="space-y-4 mb-8">
-          {comments.map((c) => (
-            <div key={c.id} className="border-b pb-3">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-bold text-primary">{c.user}</span>
-                <span className="text-yellow-400">{'★'.repeat(c.rate)}</span>
+    <main className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Product Details */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Image Gallery */}
+            <div className="p-6">
+              <div className="relative mb-4 bg-gray-50 rounded-2xl overflow-hidden group">
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="main-product-image w-full h-96 object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+                {product.discount && product.discount > 0 && (
+                  <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    {product.discount}% تخفیف
+                  </div>
+                )}
               </div>
-              <p className="text-gray-700">{c.text}</p>
+              
+              {/* Thumbnail Gallery */}
+              {product.images && Array.isArray(product.images) && product.images.length > 0 && (
+                <div className="grid grid-cols-4 gap-3">
+                  <div 
+                    className="aspect-square bg-gray-50 rounded-lg overflow-hidden cursor-pointer border-2 border-blue-500 transition-all hover:border-blue-600"
+                    onClick={() => {
+                      const mainImg = document.querySelector('.main-product-image') as HTMLImageElement;
+                      if (mainImg) mainImg.src = product.image;
+                    }}
+                  >
+                    <img src={product.image} alt="اصلی" className="w-full h-full object-contain" />
+                  </div>
+                  {product.images.filter(img => img && img.trim() !== '').map((img: string, index: number) => (
+                    <div 
+                      key={index}
+                      className="aspect-square bg-gray-50 rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all"
+                      onClick={() => {
+                        const mainImg = document.querySelector('.main-product-image') as HTMLImageElement;
+                        if (mainImg) mainImg.src = img;
+                      }}
+                    >
+                      <img 
+                        src={img} 
+                        alt={`${product.title} - ${index + 1}`} 
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.parentElement!.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-        {/* فرم ثبت نظر */}
-        <form onSubmit={handleCommentSubmit} className="mb-8 space-y-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <input
-              type="text"
-              name="user"
-              value={form.user}
-              onChange={handleCommentChange}
-              placeholder="نام شما"
-              className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <StarRating value={form.rate} onChange={handleStarChange} />
-          </div>
-          <textarea
-            name="text"
-            value={form.text}
-            onChange={handleCommentChange}
-            placeholder="متن نظر شما"
-            rows={3}
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          {formError && <div className="text-red-600 text-sm">{formError}</div>}
-          {formSuccess && <div className="text-green-600 text-sm">{formSuccess}</div>}
-          <button type="submit" className="bg-primary hover:bg-navy-700 text-white font-bold py-2 px-8 rounded-lg shadow transition-colors">ثبت نظر</button>
-        </form>
-      </section>
 
-      {/* محصولات مشابه */}
-      {related.length > 0 && (
-        <section className="mt-12">
-          <h2 className="text-xl font-bold mb-4 text-primary">محصولات مشابه</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {related.map((p) => (
-              <ProductCard
-                key={p.id}
-                id={String(p.id)}
-                name={p.title}
-                price={p.price}
-                image={p.image}
-                category={p.category}
+            {/* Product Info */}
+            <div className="p-6 lg:p-8">
+              <div className="space-y-6">
+                {/* Title & Category */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded-full">{product.category}</span>
+                    {product.rating && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-400">★</span>
+                        <span className="text-sm text-gray-600">{product.rating.rate} ({product.rating.count})</span>
+                      </div>
+                    )}
+                  </div>
+                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">{product.title}</h1>
+                </div>
+
+                {/* Price */}
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">قیمت</p>
+                      <p className="text-3xl font-bold text-gray-900">{product.price.toLocaleString()}</p>
+                      <p className="text-sm text-gray-600">تومان</p>
+                    </div>
+                    {product.discount && product.discount > 0 && (
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500 line-through">
+                          {Math.round(product.price / (1 - product.discount / 100)).toLocaleString()}
+                        </p>
+                        <p className="text-green-600 font-semibold">
+                          {Math.round(product.price * product.discount / 100).toLocaleString()} تومان صرفه‌جویی
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Colors */}
+                {product.colors && Array.isArray(product.colors) && product.colors.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">رنگ:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {product.colors.map((color, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedColor(color)}
+                          className={`px-3 py-1 rounded-full text-sm border transition-colors ${
+                            selectedColor === color 
+                              ? 'bg-blue-600 text-white border-blue-600' 
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                          }`}
+                        >
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sizes */}
+                {product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">سایز:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {product.sizes.map((size, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedSize(size)}
+                          className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
+                            selectedSize === size 
+                              ? 'bg-blue-600 text-white border-blue-600' 
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Description */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">توضیحات محصول</h3>
+                  <p className="text-gray-600 leading-relaxed">{product.description}</p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <button
+                    onClick={handleAddToCart}
+                    className={`w-full py-4 rounded-xl font-semibold text-lg shadow-lg transition-all transform hover:-translate-y-0.5 ${
+                      addedToCart 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl'
+                    }`}
+                  >
+                    {addedToCart ? '✓ افزوده شد به سبد خرید' : 'افزودن به سبد خرید'}
+                  </button>
+                  <button className="w-full border-2 border-gray-200 text-gray-700 py-3 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all font-medium">
+                    ♡ افزودن به علاقه‌مندی‌ها
+                  </button>
+                </div>
+
+                {/* Features */}
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    ضمانت اصل بودن
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    ارسال رایگان
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    پرداخت امن
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    7 روز ضمانت برگشت
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Comments Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-6 text-gray-900">نظرات کاربران</h2>
+          
+          {/* Comment Form */}
+          <form onSubmit={handleCommentSubmit} className="mb-8 p-4 bg-gray-50 rounded-xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <input
+                type="text"
+                name="user"
+                value={form.user}
+                onChange={(e) => setForm({ ...form, user: e.target.value })}
+                placeholder="نام شما"
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">امتیاز:</span>
+                <StarRating value={form.rate} onChange={(rate) => setForm({ ...form, rate })} />
+              </div>
+            </div>
+            <textarea
+              name="text"
+              value={form.text}
+              onChange={(e) => setForm({ ...form, text: e.target.value })}
+              placeholder="متن نظر شما"
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+            />
+            {formError && <div className="text-red-600 text-sm mb-4">{formError}</div>}
+            {formSuccess && <div className="text-green-600 text-sm mb-4">{formSuccess}</div>}
+            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              ثبت نظر
+            </button>
+          </form>
+
+          {/* Comments List */}
+          <div className="space-y-4">
+            {comments.map((comment) => (
+              <div key={comment.id} className="border-b border-gray-200 pb-4 last:border-b-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-semibold text-gray-900">{comment.user}</span>
+                  <span className="text-yellow-400">{'★'.repeat(comment.rate)}</span>
+                </div>
+                <p className="text-gray-700">{comment.text}</p>
+              </div>
             ))}
           </div>
-        </section>
-      )}
+        </div>
+
+        {/* Related Products */}
+        {related.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-2xl font-bold mb-6 text-gray-900">محصولات مشابه</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {related.map((p) => (
+                <ProductCard
+                  key={p.id}
+                  id={String(p.id)}
+                  name={p.title}
+                  price={p.price}
+                  image={p.image}
+                  category={p.category}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </main>
   );
 };
 
-export default ProductDetailPage; 
+export default ProductDetailPage;

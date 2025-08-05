@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { ReduxProvider } from "@/components/providers/ReduxProvider";
+import LayoutContent from "@/components/LayoutContent";
 
 export const metadata: Metadata = {
   title: "Hamed Boutique",
@@ -18,9 +17,7 @@ export default function RootLayout({
     <html lang="fa" dir="rtl">
       <body className="font-bnazanin bg-white text-black">
         <ReduxProvider>
-          <Header />
-          {children}
-          <Footer />
+          <LayoutContent>{children}</LayoutContent>
         </ReduxProvider>
       </body>
     </html>

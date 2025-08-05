@@ -20,8 +20,9 @@ export async function POST(request: NextRequest) {
     // پیدا کردن کاربر
     const user = await findUserByEmail(email);
     if (!user) {
+      console.log(`تلاش ناموفق برای ورود با ایمیل: ${email}, کاربر یافت نشد`);
       return NextResponse.json(
-        { error: 'ایمیل یا رمز عبور اشتباه است' },
+        { error: 'کاربری با این ایمیل یافت نشد. لطفاً از admin@site.com یا admin@site استفاده کنید' },
         { status: 401 }
       );
     }
@@ -29,8 +30,9 @@ export async function POST(request: NextRequest) {
     // تایید پسورد
     const isValidPassword = await verifyPassword(password, user.password);
     if (!isValidPassword) {
+      console.log(`تلاش ناموفق برای ورود با ایمیل: ${email}, رمز عبور نادرست است`);
       return NextResponse.json(
-        { error: 'ایمیل یا رمز عبور اشتباه است' },
+        { error: 'رمز عبور نادرست است. رمز عبور صحیح: admin123' },
         { status: 401 }
       );
     }
