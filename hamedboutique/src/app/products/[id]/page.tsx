@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import { addToCart } from "@/store/slices/cartSlice";
 import ProductCard from "@/components/ProductCard";
+import Toast from "@/components/Toast";
 
 interface Product {
   id: number;
@@ -59,6 +60,7 @@ const ProductDetailPage = () => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
+  const [toast, setToast] = useState<{message: string, type: 'error' | 'success' | 'warning'} | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -118,11 +120,35 @@ const ProductDetailPage = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    if (product) {
-      dispatch(addToCart(product));
-      setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 2000);
+    if (!product) return;
+    
+    const hasColors = product.colors && Array.isArray(product.colors) && product.colors.length > 0;
+    const hasSizes = product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0;
+    
+    if (hasColors && !selectedColor) {
+      setToast({ message: 'لطفاً رنگ مورد نظر خود را انتخاب کنید! 🎨', type: 'warning' });
+      return;
     }
+    
+    if (hasSizes && !selectedSize) {
+      setToast({ message: 'لطفاً سایز مورد نظر خود را انتخاب کنید! 📎', type: 'warning' });
+      return;
+    }
+    
+    const cartItem = {
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+      color: selectedColor,
+      size: selectedSize
+    };
+    
+    dispatch(addToCart(cartItem));
+    setAddedToCart(true);
+    setToast({ message: 'محصول با موفقیت به سبد خرید اضافه شد! 🛍️', type: 'success' });
+    setTimeout(() => setAddedToCart(false), 2000);
   };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
@@ -438,6 +464,14 @@ const ProductDetailPage = () => {
           </div>
         )}
       </div>
+      
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </main>
   );
 };

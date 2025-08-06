@@ -7,6 +7,9 @@ export interface CartItem {
   image: string;
   quantity: number;
   category?: string;
+  color?: string;
+  size?: string;
+  uniqueId?: string;
 }
 
 interface CartState {
@@ -26,26 +29,27 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<Omit<CartItem, 'quantity'>>) => {
-      const existingItem = state.items.find(item => item.id === action.payload.id);
+      const uniqueId = action.payload.uniqueId || `${action.payload.id}-${action.payload.color || 'default'}-${action.payload.size || 'default'}`;
+      const existingItem = state.items.find(item => item.uniqueId === uniqueId);
       
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
-        state.items.push({ ...action.payload, quantity: 1 });
+        state.items.push({ ...action.payload, quantity: 1, uniqueId });
       }
     },
     
-    removeFromCart: (state, action: PayloadAction<number>) => {
-      state.items = state.items.filter(item => item.id !== action.payload);
+    removeFromCart: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter(item => item.uniqueId !== action.payload);
     },
     
-    updateQuantity: (state, action: PayloadAction<{ id: number; quantity: number }>) => {
+    updateQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
       const { id, quantity } = action.payload;
-      const item = state.items.find(item => item.id === id);
+      const item = state.items.find(item => item.uniqueId === id);
       
       if (item) {
         if (quantity <= 0) {
-          state.items = state.items.filter(item => item.id !== id);
+          state.items = state.items.filter(item => item.uniqueId !== id);
         } else {
           item.quantity = quantity;
         }

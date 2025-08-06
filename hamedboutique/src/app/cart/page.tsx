@@ -20,20 +20,15 @@ const CartPage = () => {
       return;
     }
     
-    setCheckingOut(true);
-    // Here you would typically redirect to a checkout page or payment gateway
-    setTimeout(() => {
-      alert("در حال انتقال به درگاه پرداخت...");
-      setCheckingOut(false);
-    }, 1000);
+    router.push("/checkout");
   };
 
-  const handleRemoveItem = (productId: number) => {
-    dispatch(removeFromCart(productId));
+  const handleRemoveItem = (uniqueId: string) => {
+    dispatch(removeFromCart(uniqueId));
   };
 
-  const handleUpdateQuantity = (productId: number, quantity: number) => {
-    dispatch(updateQuantity({ id: productId, quantity }));
+  const handleUpdateQuantity = (uniqueId: string, quantity: number) => {
+    dispatch(updateQuantity({ id: uniqueId, quantity }));
   };
 
   const handleClearCart = () => {
@@ -85,52 +80,87 @@ const CartPage = () => {
                   </button>
                 </div>
 
-                <div className="space-y-3 sm:space-y-4">
+                <div className="space-y-4">
                   {items.map((item) => (
                     <div
-                      key={item.id}
-                      className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg"
+                      key={item.uniqueId}
+                      className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-300"
                     >
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg mx-auto sm:mx-0"
-                      />
-                      
-                      <div className="flex-1 w-full sm:w-auto text-center sm:text-right">
-                        <h3 className="font-semibold text-gray-800 mb-1 text-sm sm:text-base line-clamp-1">{item.title}</h3>
-                        <p className="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">{item.category}</p>
-                        <p className="font-bold text-gray-800 text-sm sm:text-base">
-                          {item.price.toLocaleString()} تومان
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-2 mx-auto sm:mx-0">
-                        <button
-                          onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                          className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
-                        >
-                          -
-                        </button>
-                        <span className="w-8 sm:w-12 text-center font-medium">{item.quantity}</span>
-                        <button
-                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                          className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
-                        >
-                          +
-                        </button>
-                      </div>
-
-                      <div className="text-center sm:text-right w-full sm:w-auto">
-                        <p className="font-bold text-gray-800 text-sm sm:text-base">
-                          {(item.price * item.quantity).toLocaleString()} تومان
-                        </p>
-                        <button
-                          onClick={() => handleRemoveItem(item.id)}
-                          className="text-red-600 hover:text-red-700 text-xs sm:text-sm mt-1"
-                        >
-                          حذف
-                        </button>
+                      <div className="flex gap-4">
+                        <div className="relative">
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-20 h-20 object-contain rounded-lg bg-white shadow-sm"
+                          />
+                          <div className="absolute -top-2 -right-2 bg-gradient-to-r from-gray-400 to-gray-300 text-white text-xs px-2 py-1 rounded-full font-bold">
+                            {item.quantity}
+                          </div>
+                        </div>
+                        
+                        <div className="flex-1">
+                          <h3 className="font-bold text-gray-800 mb-2 text-lg leading-tight">{item.title}</h3>
+                          
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                              {item.category}
+                            </span>
+                            {item.color && item.color !== 'پیشفرض' ? (
+                              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                رنگ: {item.color}
+                              </span>
+                            ) : (
+                              <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+                                رنگ انتخاب نشده
+                              </span>
+                            )}
+                            {item.size && item.size !== 'پیشفرض' ? (
+                              <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+                                سایز: {item.size}
+                              </span>
+                            ) : (
+                              <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+                                سایز انتخاب نشده
+                              </span>
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center bg-gray-100 rounded-lg">
+                                <button
+                                  onClick={() => handleUpdateQuantity(item.uniqueId!, item.quantity - 1)}
+                                  className="w-8 h-8 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-l-lg transition-colors flex items-center justify-center"
+                                >
+                                  −
+                                </button>
+                                <span className="w-12 text-center font-bold text-gray-800">{item.quantity}</span>
+                                <button
+                                  onClick={() => handleUpdateQuantity(item.uniqueId!, item.quantity + 1)}
+                                  className="w-8 h-8 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-r-lg transition-colors flex items-center justify-center"
+                                >
+                                  +
+                                </button>
+                              </div>
+                              
+                              <button
+                                onClick={() => handleRemoveItem(item.uniqueId!)}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-all"
+                                title="حذف از سبد خرید"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                            
+                            <div className="text-right">
+                              <p className="text-sm text-gray-600">قیمت واحد: {item.price.toLocaleString()} تومان</p>
+                              <p className="text-lg font-bold text-gray-800">
+                                {(item.price * item.quantity).toLocaleString()} تومان
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
