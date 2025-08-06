@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAppDispatch } from "@/store/hooks";
-import { addToCart } from "@/store/slices/cartSlice";
 import { motion } from "framer-motion";
 
 interface ProductCardProps {
@@ -16,21 +15,8 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ id, name, price, image, category }) => {
-  const dispatch = useAppDispatch();
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    dispatch(addToCart({
-      id: parseInt(id),
-      title: name,
-      price,
-      image,
-      category
-    }));
-  };
 
   return (
     <motion.div 
@@ -79,15 +65,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, name, price, image, categ
           >
             <span className="text-white text-base">مشاهده جزئیات</span>
           </Link>
-          <motion.button
-            onClick={handleAddToCart}
-            className="bg-gray-100 text-gray-800 rounded-xl px-4 py-3 hover:bg-gray-800 hover:text-white transition-all duration-300 font-bold text-sm flex items-center justify-center shadow-md"
-            whileTap={{ scale: 0.95 }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-          </motion.button>
         </div>
       </div>
     </motion.div>
