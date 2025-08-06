@@ -17,7 +17,7 @@ const slides = [
     link: "/products",
   },
   {
-    image: "/assets/pics/pichero1.png",
+    image: "/assets/pics/inside3.jpg",
     title: "حامد بوتیک، انتخاب شیک‌پوشان",
     subtitle: "جدیدترین کالکشن‌های پوشاک مردانه ارسال رایگان و تضمین کیفیت.",
     cta: "درباره ما بیشتر بدانید",

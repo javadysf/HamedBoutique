@@ -7,8 +7,17 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-gray-400 via-gray-300 to-gray-200 text-gray-800 py-24">
-        <div className="container mx-auto px-6 text-center">
+      <section className="relative bg-gradient-to-br from-gray-400 via-gray-300 to-gray-200 text-gray-800 py-24 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/assets/pics/inside6.png"
+            alt="حامد بوتیک"
+          fill
+            className="object-cover opacity-20"
+            priority
+          />
+        </div>
+        <div className="container mx-auto px-6 text-center relative z-10">
           <div className="flex items-center justify-center text-5xl md:text-7xl font-extrabold mb-8 drop-shadow-lg"> 
             <Image alt="logo" src={logo} width={175} height={175} />
              بوتیک</div>
