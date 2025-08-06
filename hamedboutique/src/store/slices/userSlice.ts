@@ -24,8 +24,8 @@ interface UserState {
 
 const initialState: UserState = {
   user: null,
-  token: null,
-  loading: true,
+  token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
+  loading: false,
   error: null,
 };
 
@@ -40,18 +40,27 @@ const userSlice = createSlice({
     
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', action.payload);
+      }
     },
     
     login: (state, action: PayloadAction<{ user: User; token: string }>) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.error = null;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', action.payload.token);
+      }
     },
     
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.error = null;
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+      }
     },
     
     updateUser: (state, action: PayloadAction<Partial<User>>) => {

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { selectUser, selectUserLoading, logout, setToken, setUser, setLoading } from "@/store/slices/userSlice";
+import { selectUser, selectUserLoading, selectToken, logout, setToken, setUser, setLoading } from "@/store/slices/userSlice";
 import { selectTotalItems } from "@/store/slices/cartSlice";
 import basket from "../../public/assets/pics/Basket.png"
 import Image from "next/image";
@@ -21,18 +21,18 @@ const Header = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   const loading = useAppSelector(selectUserLoading);
+  const token = useAppSelector(selectToken);
   const totalItems = useAppSelector(selectTotalItems);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      dispatch(setToken(storedToken));
+    if (storedToken && !user) {
       fetchCurrentUser(storedToken);
-    } else {
+    } else if (!storedToken) {
       dispatch(setLoading(false));
     }
-  }, [dispatch]);
+  }, [dispatch, user]);
 
   const fetchCurrentUser = async (userToken: string) => {
     try {
@@ -45,8 +45,10 @@ const Header = () => {
       if (response.ok) {
         const userData = await response.json();
         dispatch(setUser(userData));
+        if (!token) {
+          dispatch(setToken(userToken));
+        }
       } else {
-        localStorage.removeItem('token');
         dispatch(logout());
       }
     } catch (error) {

@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import PersianDatePicker from "@/components/PersianDatePicker";
 
 interface RegisterFormProps {
   onSuccess: (userId: number) => void;
@@ -128,17 +127,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             placeholder="رمز عبور را تکرار کنید"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            تاریخ تولد
-          </label>
-          <PersianDatePicker
-            value={formData.birthDate}
-            onChange={(date) => setFormData({ ...formData, birthDate: date })}
-            placeholder="تاریخ تولد خود را انتخاب کنید"
           />
         </div>
 

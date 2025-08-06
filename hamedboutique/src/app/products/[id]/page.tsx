@@ -1,10 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addToCart } from "@/store/slices/cartSlice";
+import { selectUser } from "@/store/slices/userSlice";
 import ProductCard from "@/components/ProductCard";
 import Toast from "@/components/Toast";
+import StarRating from "@/components/StarRating";
 
 interface Product {
   id: number;
@@ -27,25 +29,7 @@ interface Comment {
   rate: number;
 }
 
-const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
-  return (
-    <div className="flex flex-row-reverse justify-end gap-1 cursor-pointer select-none">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <span
-          key={star}
-          onClick={() => onChange(star)}
-          className={
-            star <= value
-              ? "text-yellow-400 text-2xl transition-colors hover:text-yellow-500"
-              : "text-gray-300 text-2xl transition-colors hover:text-yellow-400"
-          }
-        >
-          ★
-        </span>
-      ))}
-    </div>
-  );
-};
+
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -62,6 +46,7 @@ const ProductDetailPage = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [toast, setToast] = useState<{message: string, type: 'error' | 'success' | 'warning'} | null>(null);
   const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
 
   useEffect(() => {
     if (!id) return;
@@ -153,8 +138,8 @@ const ProductDetailPage = () => {
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.user.trim() || !form.text.trim()) {
-      setFormError("لطفاً نام و متن نظر را وارد کنید.");
+    if (!form.text.trim()) {
+      setFormError("لطفاً متن نظر را وارد کنید.");
       return;
     }
     try {
@@ -163,7 +148,7 @@ const ProductDetailPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           productId: id,
-          user: form.user,
+          user: user?.name || user?.username || user?.email,
           text: form.text,
           rate: form.rate,
         }),
@@ -401,35 +386,34 @@ const ProductDetailPage = () => {
           <h2 className="text-2xl font-bold mb-6 text-gray-900">نظرات کاربران</h2>
           
           {/* Comment Form */}
-          <form onSubmit={handleCommentSubmit} className="mb-8 p-4 bg-gray-50 rounded-xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <input
-                type="text"
-                name="user"
-                value={form.user}
-                onChange={(e) => setForm({ ...form, user: e.target.value })}
-                placeholder="نام شما"
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <div className="flex items-center gap-2">
+          {user ? (
+            <form onSubmit={handleCommentSubmit} className="mb-8 p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-2 mb-4">
                 <span className="text-sm text-gray-600">امتیاز:</span>
-                <StarRating value={form.rate} onChange={(rate) => setForm({ ...form, rate })} />
+                <StarRating value={form.rate} onChange={(rate) => setForm({ ...form, rate })} size="md" />
               </div>
+              <textarea
+                name="text"
+                value={form.text}
+                onChange={(e) => setForm({ ...form, text: e.target.value })}
+                placeholder="متن نظر شما"
+                rows={4}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+              />
+              {formError && <div className="text-red-600 text-sm mb-4">{formError}</div>}
+              {formSuccess && <div className="text-green-600 text-sm mb-4">{formSuccess}</div>}
+              <button type="submit" className="bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all">
+                ثبت نظر
+              </button>
+            </form>
+          ) : (
+            <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-xl text-center">
+              <p className="text-blue-800 mb-4">برای ثبت نظر باید وارد حساب کاربری خود شوید</p>
+              <a href="/auth" className="bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all inline-block">
+                ورود / ثبتنام
+              </a>
             </div>
-            <textarea
-              name="text"
-              value={form.text}
-              onChange={(e) => setForm({ ...form, text: e.target.value })}
-              placeholder="متن نظر شما"
-              rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-            />
-            {formError && <div className="text-red-600 text-sm mb-4">{formError}</div>}
-            {formSuccess && <div className="text-green-600 text-sm mb-4">{formSuccess}</div>}
-            <button type="submit" className="bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all">
-              ثبت نظر
-            </button>
-          </form>
+          )}
 
           {/* Comments List */}
           <div className="space-y-4">
