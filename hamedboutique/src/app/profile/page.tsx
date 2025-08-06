@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectUser, selectUserLoading, selectToken, updateUser } from "@/store/slices/userSlice";
 import { Loading } from "@/components/common";
+import PersianDatePicker from "@/components/PersianDatePicker";
+import { formatPersianDate } from "@/utils/dateUtils";
 
 interface UserProfile {
   id: number;
@@ -260,12 +262,10 @@ const ProfilePage = () => {
                         <label className="block text-sm font-medium text-gray-400 mb-2">
                           تاریخ تولد
                         </label>
-                        <input
-                          type="date"
-                          name="birthDate"
+                        <PersianDatePicker
                           value={formData.birthDate}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-700 focus:border-transparent"
+                          onChange={(date) => setFormData({ ...formData, birthDate: date })}
+                          placeholder="تاریخ تولد خود را انتخاب کنید"
                         />
                       </div>
 
@@ -352,8 +352,12 @@ const ProfilePage = () => {
                         <p className="text-gray-700 font-medium">{profile?.name || "تنظیم نشده"}</p>
                       </div>
                       <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">نام کاربری</label>
+                        <p className="text-gray-700 font-medium">{profile?.username || "تنظیم نشده"}</p>
+                      </div>
+                      <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">ایمیل</label>
-                        <p className="text-gray-700 font-medium">{profile?.email}</p>
+                        <p className="text-gray-700 font-medium">{profile?.email || "تنظیم نشده"}</p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">شماره تلفن</label>
@@ -361,7 +365,7 @@ const ProfilePage = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">تاریخ تولد</label>
-                        <p className="text-gray-700 font-medium">{profile?.birthDate || "تنظیم نشده"}</p>
+                        <p className="text-gray-700 font-medium">{formatPersianDate(profile?.birthDate || '')}</p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">جنسیت</label>

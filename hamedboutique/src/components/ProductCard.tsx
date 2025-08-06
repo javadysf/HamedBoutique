@@ -75,7 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, name, price, image, categ
         <div className="flex gap-2 mt-3">
           <Link
             href={`/products/${id}`}
-            className="flex-1 inline-flex justify-center items-center bg-gray-400 transition-colors text-white rounded-xl px-4 py-3 text-center hover:bg-blue-700 transition-all duration-300 font-bold text-sm shadow-md"
+            className="flex-1 inline-flex justify-center items-center bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 rounded-xl px-4 py-3 text-center hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white transition-all duration-300 font-bold text-sm shadow-md"
           >
             <span className="text-white text-base">مشاهده جزئیات</span>
           </Link>

@@ -4,7 +4,7 @@ import { hashPassword } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, email, password } = await request.json();
+    const { username, email, password, birthDate } = await request.json();
 
     // اعتبارسنجی ورودی
     if (!username || !email || !password) {
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await hashPassword(password);
 
     // ایجاد کاربر
-    const result = await createUser(username, email, hashedPassword);
+    const result = await createUser(username, email, hashedPassword, birthDate);
 
     return NextResponse.json(
       { 

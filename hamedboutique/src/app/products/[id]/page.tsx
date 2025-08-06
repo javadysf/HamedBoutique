@@ -239,7 +239,7 @@ const ProductDetailPage = () => {
                 {/* Title & Category */}
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded-full">{product.category}</span>
+                    <span className="text-sm text-gray-600 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1 rounded-full">{product.category}</span>
                     {product.rating && (
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-400">★</span>
@@ -282,8 +282,8 @@ const ProductDetailPage = () => {
                           onClick={() => setSelectedColor(color)}
                           className={`px-3 py-1 rounded-full text-sm border transition-colors ${
                             selectedColor === color 
-                              ? 'bg-blue-600 text-white border-blue-600' 
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                              ? 'bg-gradient-to-r from-gray-400 to-gray-300 text-white border-gray-400' 
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                           }`}
                         >
                           {color}
@@ -304,8 +304,8 @@ const ProductDetailPage = () => {
                           onClick={() => setSelectedSize(size)}
                           className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
                             selectedSize === size 
-                              ? 'bg-blue-600 text-white border-blue-600' 
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                              ? 'bg-gradient-to-r from-gray-400 to-gray-300 text-white border-gray-400' 
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                           }`}
                         >
                           {size}
@@ -400,7 +400,7 @@ const ProductDetailPage = () => {
             />
             {formError && <div className="text-red-600 text-sm mb-4">{formError}</div>}
             {formSuccess && <div className="text-green-600 text-sm mb-4">{formSuccess}</div>}
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+            <button type="submit" className="bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all">
               ثبت نظر
             </button>
           </form>

@@ -86,12 +86,12 @@ export async function initDb() {
 }
 
 // ایجاد کاربر جدید
-export async function createUser(username: string, email: string, hashedPassword: string) {
+export async function createUser(username: string, email: string, hashedPassword: string, birthDate?: string) {
   const db = await openDb();
   try {
     const result = await db.run(
-      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-      [username, email, hashedPassword]
+      'INSERT INTO users (username, email, password, birthDate) VALUES (?, ?, ?, ?)',
+      [username, email, hashedPassword, birthDate || null]
     );
     return result;
   } finally {

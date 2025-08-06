@@ -54,11 +54,11 @@ const AuthContainer: React.FC = () => {
                 {/* Logo */}
                 <div className="mb-8">
                   <Image 
-                   width={128}
-                   height={128}
+                   width={256}
+                   height={256}
                     src={logo} 
                     alt="حامد بوتیک" 
-                    className=" mx-auto mb-4 rounded-full bg-gray-50 p-2 shadow-lg"
+                    className=" mx-auto mb-4 rounded-full bg-gray-100 p-2 shadow-lg"
                   />
                   <h1 className="text-3xl font-bold  mb-2">حامد بوتیک</h1>
                   <p className=" text-lg">فروشگاه آنلاین پوشاک</p>
@@ -67,17 +67,6 @@ const AuthContainer: React.FC = () => {
   
                 
                 {/* Welcome Text */}
-                <div className="mt-8">
-                  <h2 className="text-2xl font-bold mb-4">
-                    {isLogin ? 'خوش آمدید' : 'عضویت در خانواده ما'}
-                  </h2>
-                  <p >
-                    {isLogin 
-                      ? 'برای ادامه، وارد حساب کاربری خود شوید' 
-                      : 'برای دسترسی به تمام امکانات، ثبت نام کنید'
-                    }
-                  </p>
-                </div>
               </div>
             </div>
             

@@ -14,7 +14,9 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
   return (
     <>
       <Header />
-      {children}
+      <main >
+        {children}
+      </main>
       <Footer />
     </>
   );

@@ -51,7 +51,7 @@ const CartPage = () => {
               <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">محصولات مورد نظر خود را به سبد خرید اضافه کنید</p>
               <button
                 onClick={() => router.push("/products")}
-                className="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base"
+                className="bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white transition-all font-medium text-sm sm:text-base"
               >
                 مشاهده محصولات
               </button>
@@ -167,7 +167,7 @@ const CartPage = () => {
                 <button
                   onClick={handleCheckout}
                   disabled={checkingOut}
-                  className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
+                  className="w-full bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 py-2 sm:py-3 px-4 rounded-lg hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
                 >
                   {checkingOut ? (
                     <div className="flex items-center justify-center gap-2">

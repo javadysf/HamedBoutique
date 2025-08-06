@@ -99,7 +99,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg shadow-lg"
+          className="w-full bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 py-3 px-6 rounded-xl hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg shadow-lg"
         >
           {loading ? (
             <div className="flex items-center justify-center">
@@ -117,7 +117,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) 
           حساب کاربری ندارید؟{" "}
           <button
             onClick={onSwitchToRegister}
-            className="text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+            className="text-gray-600 hover:text-gray-800 font-medium hover:underline transition-colors"
           >
             ثبت‌نام کنید
           </button>

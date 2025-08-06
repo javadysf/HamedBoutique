@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import PersianDatePicker from "@/components/PersianDatePicker";
 
 interface RegisterFormProps {
   onSuccess: (userId: number) => void;
@@ -12,6 +13,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
     email: "",
     password: "",
     confirmPassword: "",
+    birthDate: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -49,6 +51,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
           username: formData.username,
           email: formData.email,
           password: formData.password,
+          birthDate: formData.birthDate,
         }),
       });
 
@@ -128,6 +131,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
           />
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            تاریخ تولد
+          </label>
+          <PersianDatePicker
+            value={formData.birthDate}
+            onChange={(date) => setFormData({ ...formData, birthDate: date })}
+            placeholder="تاریخ تولد خود را انتخاب کنید"
+          />
+        </div>
+
         {error && (
           <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-lg">
             {error}
@@ -137,7 +151,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg shadow-lg"
+          className="w-full bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-gray-800 py-3 px-6 rounded-xl hover:from-gray-500 hover:via-gray-400 hover:to-gray-300 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg shadow-lg"
         >
           {loading ? (
             <div className="flex items-center justify-center">
@@ -155,7 +169,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
           قبلاً ثبت‌نام کرده‌اید؟{" "}
           <button
             onClick={onSwitchToLogin}
-            className="text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+            className="text-gray-600 hover:text-gray-800 font-medium hover:underline transition-colors"
           >
             وارد شوید
           </button>
