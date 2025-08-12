@@ -29,6 +29,15 @@ export async function GET(
       }
     }
 
+    // پردازش موجودی
+    if (product.inventory && typeof product.inventory === 'string') {
+      try {
+        product.inventory = JSON.parse(product.inventory);
+      } catch {
+        product.inventory = [];
+      }
+    }
+
     return NextResponse.json(product);
   } catch (error) {
     console.error('خطا در دریافت محصول:', error);

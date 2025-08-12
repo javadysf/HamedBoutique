@@ -20,20 +20,69 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // شبیه‌سازی دریافت آمار
-    setTimeout(() => {
-      setStats({
-        totalProducts: 25,
-        totalUsers: 150,
-        totalComments: 89,
-        recentActivity: [
-          { type: 'user', message: 'کاربر جدید ثبت‌نام کرد', time: '5 دقیقه پیش' },
-          { type: 'comment', message: 'نظر جدید بر محصول', time: '15 دقیقه پیش' },
-          { type: 'product', message: 'محصول جدید اضافه شد', time: '1 ساعت پیش' }
-        ]
-      });
-      setLoading(false);
-    }, 1000);
+    const fetchDashboardData = async () => {
+      try {
+        const [productsRes, usersRes, commentsRes] = await Promise.all([
+          fetch('/api/admin/products'),
+          fetch('/api/admin/users'),
+          fetch('/api/admin/comments')
+        ]);
+
+        const [products, users, comments] = await Promise.all([
+          productsRes.json(),
+          usersRes.json(),
+          commentsRes.json()
+        ]);
+
+        const recentActivity = [];
+        
+        if (users && users.length > 0) {
+          const latestUser = users[users.length - 1];
+          recentActivity.push({
+            type: 'user',
+            message: `کاربر ${latestUser.username} ثبتنام کرد`,
+            time: new Date(latestUser.created_at).toLocaleDateString('fa-IR')
+          });
+        }
+
+        if (comments && comments.length > 0) {
+          const latestComment = comments[comments.length - 1];
+          recentActivity.push({
+            type: 'comment',
+            message: `نظر جدید از ${latestComment.user_name}`,
+            time: new Date(latestComment.created_at).toLocaleDateString('fa-IR')
+          });
+        }
+
+        if (products && products.length > 0) {
+          const latestProduct = products[products.length - 1];
+          recentActivity.push({
+            type: 'product',
+            message: `محصول ${latestProduct.title} اضافه شد`,
+            time: new Date(latestProduct.created_at).toLocaleDateString('fa-IR')
+          });
+        }
+
+        setStats({
+          totalProducts: products?.length || 0,
+          totalUsers: users?.length || 0,
+          totalComments: comments?.length || 0,
+          recentActivity: recentActivity.slice(0, 5)
+        });
+      } catch (error) {
+        console.error('خطا در دریافت دادههای داشبورد:', error);
+        setStats({
+          totalProducts: 0,
+          totalUsers: 0,
+          totalComments: 0,
+          recentActivity: []
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   const statCards = [
@@ -76,7 +125,7 @@ export default function AdminDashboard() {
     {
       title: 'افزودن محصول جدید',
       description: 'محصول جدید به فروشگاه اضافه کنید',
-      link: '/admin/products',
+      link: '/admin/products/new',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -126,7 +175,7 @@ export default function AdminDashboard() {
           <p className="text-gray-600 mt-1">مروری بر وضعیت کلی فروشگاه</p>
         </div>
         <div className="text-sm text-gray-500">
-          آخرین به‌روزرسانی: {new Date().toLocaleDateString('fa-IR')}
+          آخرین بهروزرسانی: {new Date().toLocaleDateString('fa-IR')}
         </div>
       </div>
 
@@ -172,23 +221,27 @@ export default function AdminDashboard() {
 
         {/* Recent Activity */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">فعالیت‌های اخیر</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">فعالیتهای اخیر</h2>
           <div className="space-y-4">
-            {stats.recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-start">
-                <div className={`w-2 h-2 rounded-full mt-2 ml-3 ${
-                  activity.type === 'user' ? 'bg-green-500' :
-                  activity.type === 'comment' ? 'bg-blue-500' : 'bg-purple-500'
-                }`}></div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">{activity.message}</p>
-                  <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+            {stats.recentActivity.length > 0 ? (
+              stats.recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-start">
+                  <div className={`w-2 h-2 rounded-full mt-2 ml-3 ${
+                    activity.type === 'user' ? 'bg-green-500' :
+                    activity.type === 'comment' ? 'bg-blue-500' : 'bg-purple-500'
+                  }`}></div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-900">{activity.message}</p>
+                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">هیچ فعالیت اخیری وجود ندارد</p>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}

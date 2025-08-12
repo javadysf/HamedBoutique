@@ -42,6 +42,7 @@ export async function initDb() {
       discount REAL DEFAULT 0,
       colors TEXT,
       sizes TEXT,
+      inventory TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     -- جدول نظرات
@@ -54,7 +55,15 @@ export async function initDb() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
-  // افزودن ادمین پیش‌فرض اگر وجود ندارد
+  
+  // بررسی و اضافه کردن ستون inventory اگر وجود ندارد
+  try {
+    await db.run('ALTER TABLE products ADD COLUMN inventory TEXT');
+  } catch (error) {
+    // ستون قبلاً وجود دارد
+  }
+  
+  // افزودن ادمین پیشفرض اگر وجود ندارد
   const admin = await db.get('SELECT * FROM users WHERE username = ?', ['admin']);
   if (!admin) {
     // هش جدید برای رمز عبور admin123
@@ -106,7 +115,7 @@ export async function findUserByEmail(email: string) {
     // ابتدا جستجوی دقیق
     let user = await db.get('SELECT * FROM users WHERE email = ?', [email]);
     
-    // اگر کاربر پیدا نشد، جستجوی انعطاف‌پذیر
+    // اگر کاربر پیدا نشد، جستجوی انعطافپذیر
     if (!user && email === 'admin@site') {
       user = await db.get('SELECT * FROM users WHERE email = ?', ['admin@site.com']);
     }
@@ -200,15 +209,17 @@ export async function getCommentsByProductId(productId: number) {
 } 
 
 // افزودن محصول جدید
-export async function addProduct(product: { title: string; price: number; image?: string; images?: string[]; description?: string; category?: string; discount?: number; colors?: string[]; sizes?: string[]; }) {
+export async function addProduct(product: { title: string; price: number; image?: string; images?: string[]; description?: string; category?: string; discount?: number; inventory?: any[]; colors?: string[]; sizes?: string[]; }) {
   const db = await openDb();
   try {
     const imagesJson = product.images ? JSON.stringify(product.images) : null;
+    const inventoryJson = product.inventory ? JSON.stringify(product.inventory) : null;
     const colorsJson = product.colors ? JSON.stringify(product.colors) : null;
     const sizesJson = product.sizes ? JSON.stringify(product.sizes) : null;
+    
     const result = await db.run(
-      'INSERT INTO products (title, price, image, images, description, category, discount, colors, sizes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [product.title, product.price, product.image, imagesJson, product.description, product.category, product.discount || 0, colorsJson, sizesJson]
+      'INSERT INTO products (title, price, image, images, description, category, discount, colors, sizes, inventory) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [product.title, product.price, product.image, imagesJson, product.description, product.category, product.discount || 0, colorsJson, sizesJson, inventoryJson]
     );
     return result;
   } finally {
@@ -236,18 +247,15 @@ export async function getProductById(id: number) {
   }
 }
 // ویرایش محصول
-export async function updateProduct(id: number, updateData: { title?: string; price?: number; image?: string; images?: string[]; description?: string; category?: string; discount?: number; colors?: string[]; sizes?: string[]; }) {
+export async function updateProduct(id: number, updateData: { title?: string; price?: number; image?: string; images?: string[]; description?: string; category?: string; discount?: number; inventory?: any[]; }) {
   const db = await openDb();
   try {
     const processedData = { ...updateData };
     if (updateData.images) {
       (processedData as any).images = JSON.stringify(updateData.images);
     }
-    if (updateData.colors) {
-      (processedData as any).colors = JSON.stringify(updateData.colors);
-    }
-    if (updateData.sizes) {
-      (processedData as any).sizes = JSON.stringify(updateData.sizes);
+    if (updateData.inventory) {
+      (processedData as any).inventory = JSON.stringify(updateData.inventory);
     }
     
     const fields = Object.keys(processedData).filter(key => processedData[key as keyof typeof processedData] !== undefined);
@@ -270,4 +278,4 @@ export async function deleteProduct(id: number) {
   } finally {
     await db.close();
   }
-} 
+}

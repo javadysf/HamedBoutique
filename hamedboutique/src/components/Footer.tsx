@@ -1,5 +1,7 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import logo from "../../public/assets/pics/logo.png"
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -13,8 +15,8 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <span className="text-gray-700 font-bold text-lg">ح</span>
+              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
+          <Image alt="logo" src={logo} width={64} height={64}  />
               </div>
               <h3 className="text-xl font-bold text-white">حامد بوتیک</h3>
             </div>

@@ -9,7 +9,9 @@ interface Product {
   price: number;
   image: string;
   category: string;
-  rating: { rate: number; count: number };
+  discount?: number;
+  description?: string;
+  inventory?: any[];
 }
 
 const MostPopularProducts = () => {
@@ -17,23 +19,35 @@ const MostPopularProducts = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
+    fetch("/api/products")
       .then((res) => res.json())
       .then((data: Product[]) => {
-        // محبوب‌ترین‌ها: بالاترین امتیاز
-        const sorted = [...data].sort((a, b) => b.rating.rate - a.rating.rate);
-        setProducts(sorted.slice(0, 3));
+        // محبوبترینها: محصولات با تخفیف یا جدیدترین محصولات
+        const sorted = [...data]
+          .sort((a, b) => {
+            // اولویت با محصولات تخفیف دار
+            if (a.discount && !b.discount) return -1;
+            if (!a.discount && b.discount) return 1;
+            // سپس بر اساس ID (جدیدترین)
+            return b.id - a.id;
+          });
+        setProducts(sorted.slice(0, 4));
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   return (
     <section className="w-full max-w-6xl mb-8 sm:mb-12 px-4 mx-auto">
-      <h2 className="text-xl sm:text-2xl font-bold text-gray-700 mb-4 sm:mb-6 text-center">محبوب‌ترین محصولات</h2>
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-700 mb-4 sm:mb-6 text-center">محبوبترین محصولات</h2>
       {loading ? (
         <Loading size="medium" text="در حال بارگذاری محصولات محبوب..." />
+      ) : products.length === 0 ? (
+        <div className="text-center py-8 text-gray-600">
+          محصولی برای نمایش وجود ندارد
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {products.map((product) => (
             <ProductCard
               key={product.id}
@@ -50,4 +64,4 @@ const MostPopularProducts = () => {
   );
 };
 
-export default MostPopularProducts; 
+export default MostPopularProducts;
